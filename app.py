@@ -18,6 +18,12 @@ def index():
     return render_template("index.html")
 
 
+def ff(x, score):
+    if len(x) == 0:
+        return ""
+    return f'{x[0]} ({np.round(score[0], 2) * 100}%)'
+
+
 @app.route("/", methods=["POST"])
 @cross_origin()
 def text_summarization():
@@ -56,67 +62,30 @@ def text_summarization():
         for key in entity_scores:
             start, end, label = key
             score = entity_scores[key]
-            if (score > 0.01):
-                if label == "VENDOR":
+            if score > 0.01:
+                if (label == "VENDOR") & (len(vendor) == 0):
                     vendor.append(doc[start:end])
                     vendor_score.append(score)
-                elif label == "CLIENT":
+                elif (label == "CLIENT") & (len(client) == 0):
                     client.append(doc[start:end])
                     client_score.append(score)
-                elif label == "VALUE":
+                elif (label == "VALUE") & (len(value) == 0):
                     value.append(doc[start:end])
                     value_score.append(score)
-                elif label == "DURATION":
+                elif (label == "DURATION") & (len(duration) == 0):
                     duration.append(doc[start:end])
                     duration_score.append(score)
-                elif label == "LOCATION":
+                elif (label == "LOCATION") & (len(location) == 0):
                     location.append(doc[start:end])
                     location_score.append(score)
-                if label == "PRODUCT":
+                if (label == "PRODUCT") & (len(product) == 0):
                     product.append(doc[start:end])
                     product_score.append(score)
 
-        if len(vendor) > 0:
-            vendor_argmax = np.argmax(vendor_score)
-            vendor = f'{vendor[vendor_argmax]} ({np.round(vendor_score[vendor_argmax], 2) * 100}%)'
-        else:
-            vendor = ""
+        result = f'<b>VENDOR:</b> {ff(vendor, vendor_score)}<br><b>CLIENT:</b> {ff(client, client_score)}<br><b>VALUE:</b> ' \
+                 f'{ff(value, value_score)}<br><b>DURATION:</b> {ff(duration, duration_score)}' \
+                 f'<br><b>LOCATION:</b> {ff(location, location_score)}<br><b>PRODUCT:</b> {ff(product, product_score)}'
 
-        if len(client) > 0:
-            client_argmax = np.argmax(client_score)
-            client = f'{client[client_argmax]} ({np.round(client_score[client_argmax], 2) * 100}%)'
-        else:
-            client = ""
-
-        if len(value) > 0:
-            value_argmax = np.argmax(value_score)
-            value = f'{value[value_argmax]} ({np.round(value_score[value_argmax], 2) * 100}%)'
-        else:
-            value = ""
-
-        if len(duration) > 0:
-            duration_argmax = np.argmax(duration_score)
-            duration = f'{duration[duration_argmax]} ({np.round(duration_score[duration_argmax], 2) * 100}%)'
-        else:
-            duration = ""
-
-        if len(location) > 0:
-            location_argmax = np.argmax(location_score)
-            location = f'{location[location_argmax]} ({np.round(location_score[location_argmax], 2) * 100}%)'
-        else:
-            location = ""
-
-        if len(product) > 0:
-            product_argmax = np.argmax(product_score)
-            product = f'{product[product_argmax]} ({np.round(product_score[product_argmax], 2) * 100}%)'
-        else:
-            product = ""
-
-        print(vendor)
-
-        result = f'<b>VENDOR:</b> {vendor}<br><b>CLIENT:</b> {client}<br><b>VALUE:</b> ' \
-                 f'{value}<br><b>DURATION:</b> {duration}' \
-                 f'<br><b>LOCATION:</b> {location}<br><b>PRODUCT:</b> {product}'
 
         result = f'<h3>Recognized Entities</h3><p style="color: black;">{result}</p>'
     except Exception as e:
