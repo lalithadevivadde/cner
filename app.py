@@ -34,20 +34,24 @@ def text_summarization():
         value = []
         duration = []
         product = []
+        location = []
         for i in doc.ents:
-            if i.label_ == 'VENDOR':
+            if (i.label_ == 'VENDOR') & (len(vendor) == 0):
                 vendor.append(i.text)
-            elif i.label_ == 'CLIENT':
+            elif (i.label_ == 'CLIENT') & (len(client) == 0):
                 client.append(i.text)
-            elif i.label_ == 'VALUE':
+            elif (i.label_ == 'VALUE') & (len(value) == 0):
                 value.append(i.text)
-            elif i.label_ == 'DURATION':
+            elif (i.label_ == 'DURATION') & (len(duration) == 0):
                 duration.append(i.text)
-            else:
+            elif (i.label_ == 'PRODUCT') & (len(product) == 0):
                 product.append(i.text)
+            elif (i.label_ == 'LOCATION') & (len(location) == 0):
+                location.append(i.text)
 
         result = f'<b>VENDOR:</b> {ff(vendor)}<br><b>CLIENT:</b> {ff(client)}<br><b>VALUE:</b> ' \
-                 f'{ff(value)}<br><b>DURATION:</b> {ff(duration)}<br><b>PRODUCT:</b> {ff(product)}'
+                 f'{ff(value)}<br><b>DURATION:</b> {ff(duration)}' \
+                 f'<br><b>LOCATION:</b> {ff(location)}<br><b>PRODUCT:</b> {ff(product)}'
 
         result = f'<h3>Recognized Entities</h3><p style="color: black;">{result}</p>'
     except Exception as e:
